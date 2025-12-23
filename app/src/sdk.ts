@@ -24,6 +24,12 @@ import {
   ModifyWeightParams,
 } from "./types";
 
+type PoolItem = {
+  mint: PublicKey;
+  amount: number;
+  weight: number;
+};
+
 /**
  * AnySwap SDK - 单币质押系统
  */
@@ -329,25 +335,33 @@ export class AnySwapSDK {
   /**
    * 获取 Pool 信息
    */
-  async getPoolInfo(pool: PublicKey): Promise<any> {
+  async getPoolInfo(pool: PublicKey): Promise<PoolInfo & { items: PoolItem[] }> {
     const poolAccount = await this.program.account.anySwapPool.fetch(pool);
-    return poolAccount;
+    let poolItems: PoolItem[] = [];
+    for (let i = 0; i < poolAccount.tokenCount; i++) {
+      const token = poolAccount.tokens[i];
+      if (token.mintAccount && token.mintAccount.toString() !== PublicKey.default.toString()) {
+        poolItems.push({ mint: token.mintAccount, amount: token.mintAmount.toNumber(), weight: token.weight.toNumber() });
+      }
+    }
+    return {
+      admin: poolAccount.admin,
+      poolVault: poolAccount.poolVault,
+      poolMint: poolAccount.poolMint,
+      tokenCount: poolAccount.tokenCount,
+      feeNumerator: poolAccount.feeNumerator,
+      feeDenominator: poolAccount.feeDenominator,
+      items: poolItems,
+    };
   }
 
   /**
    * 获取 Pool 中所有的 LP mint
    */
   async getPoolLpMints(pool: PublicKey): Promise<PublicKey[]> {
-    const poolAccount = await this.program.account.anySwapPool.fetch(pool);
-    const lpMints: PublicKey[] = [];
-
-    for (let i = 0; i < poolAccount.tokenCount; i++) {
-      const token = poolAccount.tokens[i];
-      if (token.mintAccount && token.mintAccount.toString() !== PublicKey.default.toString()) {
-        lpMints.push(token.mintAccount);
-      }
-    }
-
-    return lpMints;
+    const poolInfo = await this.getPoolInfo(pool);
+    return poolInfo.items.map((item) => item.mint);
   }
 }
+
+export type { PoolInfo, PoolItem };

@@ -1,2 +1,2 @@
-export { AnySwapSDK, AnySwapSDK as MultiStakeSDK } from "./sdk";
+export { AnySwapSDK as MultistakeSDK, type PoolInfo, type PoolItem } from "./sdk";
 export * from "./types";
