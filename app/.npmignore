@@ -1,0 +1,43 @@
+# Source files
+src/
+*.ts
+!*.d.ts
+
+# Development files
+tsconfig.json
+example.ts
+
+# Build artifacts (only dist should be published)
+*.log
+*.tsbuildinfo
+
+# Dependencies
+node_modules/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Git
+.git/
+.gitignore
+
+# Test files and directories
+tests/
+*.test.ts
+*.spec.ts
+
+# Web application (not part of the library)
+web/
+
+# Development and build files
+*.map
+.eslintrc*
+.prettierrc*
+
