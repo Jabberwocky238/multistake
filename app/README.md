@@ -12,7 +12,7 @@
 ## 安装
 
 ```bash
-npm install @coral-xyz/anchor @solana/web3.js @solana/spl-token
+npm install @KM-studio/multistake-sdk @coral-xyz/anchor @solana/web3.js @solana/spl-token
 ```
 
 ## 快速开始
@@ -20,13 +20,13 @@ npm install @coral-xyz/anchor @solana/web3.js @solana/spl-token
 ```typescript
 import { Connection, Keypair, PublicKey } from "@solana/web3.js";
 import { Wallet } from "@coral-xyz/anchor";
-import { AnySwapSDK } from "@multistake/sdk";
+import { MultiStakeSDK } from "@KM-studio/multistake-sdk";
 
 // 初始化
 const connection = new Connection("http://127.0.0.1:8899");
 const wallet = new Wallet(Keypair.generate());
 const programId = new PublicKey("2mgSDKAjDo8fQN6oms6YzczHhyeYEJunTzxjQgegYADf");
-const sdk = new AnySwapSDK(connection, wallet, programId);
+const sdk = new MultiStakeSDK(connection, wallet, programId);
 ```
 
 ## 主要功能

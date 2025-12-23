@@ -1,6 +1,6 @@
 use anchor_lang::prelude::*;
 use anchor_spl::token::{self, Burn, Mint, Token, TokenAccount, Transfer};
-use crate::state::AnySwapPool;
+use crate::state::Pool;
 use crate::error::ErrorCode;
 
 /// 销毁 LP 凭证，赎回主币
@@ -8,7 +8,7 @@ use crate::error::ErrorCode;
 #[instruction(item_index: u16)]
 pub struct Unstake<'info> {
     #[account(mut)]
-    pub pool: AccountLoader<'info, AnySwapPool>,
+    pub pool: AccountLoader<'info, Pool>,
 
     /// Pool authority PDA
     /// CHECK: PDA derived from pool key
@@ -90,6 +90,9 @@ pub fn unstake(
         ErrorCode::InsufficientLiquidity
     );
 
+    // 对 redeem_amount 计算手续费
+    let (fee_amount, amount_after_fee) = pool.calculate_fee(redeem_amount)?;
+
     // 1. 销毁用户的 LP 凭证
     token::burn(
         CpiContext::new(
@@ -123,7 +126,7 @@ pub fn unstake(
             },
             signer,
         ),
-        redeem_amount,
+        amount_after_fee,
     )?;
 
     // 3. 更新 item 的 mint_amount
@@ -131,11 +134,13 @@ pub fn unstake(
         .ok_or(ErrorCode::InvalidTokenIndex)?;
     item_mut.sub_mint_amount(lp_amount)?;
 
-    msg!("Unstaked: user: {}, item_index: {}, lp_burned: {}, main_token_redeemed: {}",
+    msg!("Unstaked: user: {}, item_index: {}, lp_burned: {}, redeem_amount: {}, fee: {}, amount_after_fee: {}",
          ctx.accounts.user.key(),
          item_index,
          lp_amount,
-         redeem_amount);
+         redeem_amount,
+         fee_amount,
+         amount_after_fee);
 
     Ok(())
 }

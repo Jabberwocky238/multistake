@@ -1,13 +1,13 @@
 use anchor_lang::prelude::*;
 use anchor_spl::token::Mint;
-use crate::state::AnySwapPool;
+use crate::state::Pool;
 use crate::error::ErrorCode;
 
 /// 从 pool 中移除质押类型
 #[derive(Accounts)]
 pub struct RemoveTokenFromPool<'info> {
     #[account(mut)]
-    pub pool: AccountLoader<'info, AnySwapPool>,
+    pub pool: AccountLoader<'info, Pool>,
 
     /// 要移除的 LP mint 账户
     pub lp_mint: Account<'info, Mint>,

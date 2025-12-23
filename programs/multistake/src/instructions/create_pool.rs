@@ -1,6 +1,6 @@
 use anchor_lang::prelude::*;
 use anchor_spl::token::{Mint, Token, TokenAccount};
-use crate::state::AnySwapPool;
+use crate::state::Pool;
 use crate::error::ErrorCode;
 
 /// 创建单币质押 Pool
@@ -8,7 +8,7 @@ use crate::error::ErrorCode;
 #[derive(Accounts)]
 pub struct CreatePool<'info> {
     #[account(zero)]
-    pub pool: AccountLoader<'info, AnySwapPool>,
+    pub pool: AccountLoader<'info, Pool>,
 
     /// Pool authority PDA - 用于管理 pool vault
     /// CHECK: 用于管理 pool vault

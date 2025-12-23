@@ -105,7 +105,7 @@ const provider = new AnchorProvider(connection, wallet, opts);
 
 // 创建 SDK
 const program = new Program(idl, programId, provider);
-const sdk = new AnySwapSDK(program);
+const sdk = new MultiStakeSDK(program);
 ```
 
 ## 注意事项

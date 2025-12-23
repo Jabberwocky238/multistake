@@ -1,9 +1,8 @@
-import React, { FC, useState, useEffect } from 'react';
+import React, { StrictMode, FC, useState, useEffect } from 'react';
 import { useConnection, useWallet } from '@solana/wallet-adapter-react';
 import { PublicKey, Keypair } from '@solana/web3.js';
 import { AnchorProvider, Program } from '@coral-xyz/anchor';
-import { MultiStakeSDK } from 'multistake-sdk';
-import { Multistake } from 'multistake-sdk/types/multistake';
+import { MultiStakeSDK } from '@KM-studio/multistake-sdk';
 
 const PROGRAM_ID = new PublicKey('2mgSDKAjDo8fQN6oms6YzczHhyeYEJunTzxjQgegYADf');
 // Native SOL wrapped token mint
@@ -59,13 +58,8 @@ const MultiStakeDemo: FC = () => {
         { commitment: 'confirmed' }
       );
 
-      const idl = await Program.fetchIdl(PROGRAM_ID, provider);
-      if (!idl) {
-        throw new Error('Failed to fetch IDL');
-      }
-
-      const program = new Program(idl, provider);
-      const sdkInstance = new MultiStakeSDK(program as any, provider);
+      // 使用内置 IDL 创建 SDK
+      const sdkInstance = MultiStakeSDK.create(provider);
 
       setSdk(sdkInstance);
       log('✅ SDK initialized');
@@ -279,6 +273,19 @@ const MultiStakeDemo: FC = () => {
 
       log(`💰 WSOL Balance: ${wsolBalance.toFixed(4)} WSOL`);
       log(`💰 LP Token Balance: ${lpBalance.toFixed(4)} LP (decimals: ${lpDecimals})`);
+
+      // Get pool vault balance
+      if (sdk && poolAddress) {
+        const [poolVault] = sdk.derivePoolVault(new PublicKey(poolAddress));
+        const poolVaultInfo = await connection.getAccountInfo(poolVault);
+
+        if (poolVaultInfo) {
+          const { getAccount } = await import('@solana/spl-token');
+          const poolVaultAccount = await getAccount(connection, poolVault);
+          const poolVaultBalance = Number(poolVaultAccount.amount) / 1e9;
+          log(`🏦 Pool Vault Balance: ${poolVaultBalance.toFixed(4)} tokens`);
+        }
+      }
     } catch (error: any) {
       log(`⚠️ Error fetching balances: ${error.message}`);
       console.error('Balance error:', error);

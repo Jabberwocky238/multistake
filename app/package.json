@@ -1,11 +1,11 @@
 {
-  "name": "@multistake/sdk",
+  "name": "@KM-studio/multistake-sdk",
   "version": "0.1.0",
   "description": "TypeScript SDK for MultiStake - Single Token Staking System",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "build": "tsc",
+    "build": "tsc && cp src/multistake.json dist/multistake.json",
     "prepublish": "npm run build"
   },
   "keywords": [
@@ -14,8 +14,17 @@
     "staking",
     "defi"
   ],
-  "author": "",
+  "author": "KM-studio",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/KM-studio/multistake-sdk.git",
+    "directory": "app"
+  },
+  "homepage": "https://github.com/KM-studio/multistake-sdk#readme",
+  "bugs": {
+    "url": "https://github.com/KM-studio/multistake-sdk/issues"
+  },
   "peerDependencies": {
     "@coral-xyz/anchor": "^0.32.0",
     "@solana/web3.js": "^1.95.0",

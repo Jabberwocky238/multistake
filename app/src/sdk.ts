@@ -15,6 +15,7 @@ import {
   createMint,
 } from "@solana/spl-token";
 import { Multistake } from "./types/multistake";
+import IDL from "./multistake.json";
 import {
   PoolConfig,
   PoolInfo,
@@ -24,16 +25,11 @@ import {
   ModifyWeightParams,
 } from "./types";
 
-type PoolItem = {
-  mint: PublicKey;
-  amount: number;
-  weight: number;
-};
 
 /**
  * AnySwap SDK - 单币质押系统
  */
-export class AnySwapSDK {
+export class MultiStakeSDK {
   private program: Program<Multistake>;
   private provider: AnchorProvider;
 
@@ -43,6 +39,16 @@ export class AnySwapSDK {
   ) {
     this.program = program;
     this.provider = provider || (program.provider as AnchorProvider);
+  }
+
+  /**
+   * 使用内置 IDL 创建 SDK 实例
+   */
+  static create(
+    provider: AnchorProvider
+  ): MultiStakeSDK {
+    const program = new Program(IDL as any, provider) as Program<Multistake>;
+    return new MultiStakeSDK(program, provider);
   }
 
   /**
@@ -335,13 +341,17 @@ export class AnySwapSDK {
   /**
    * 获取 Pool 信息
    */
-  async getPoolInfo(pool: PublicKey): Promise<PoolInfo & { items: PoolItem[] }> {
-    const poolAccount = await this.program.account.anySwapPool.fetch(pool);
-    let poolItems: PoolItem[] = [];
+  async getPoolInfo(pool: PublicKey): Promise<PoolInfo & { items: TokenInfo[] }> {
+    const poolAccount = await this.program.account.pool.fetch(pool);
+    let poolItems: TokenInfo[] = [];
     for (let i = 0; i < poolAccount.tokenCount; i++) {
       const token = poolAccount.tokens[i];
       if (token.mintAccount && token.mintAccount.toString() !== PublicKey.default.toString()) {
-        poolItems.push({ mint: token.mintAccount, amount: token.mintAmount.toNumber(), weight: token.weight.toNumber() });
+        poolItems.push({
+          mintAccount: token.mintAccount,
+          mintAmount: token.mintAmount,
+          weight: token.weight
+        });
       }
     }
     return {
@@ -360,8 +370,8 @@ export class AnySwapSDK {
    */
   async getPoolLpMints(pool: PublicKey): Promise<PublicKey[]> {
     const poolInfo = await this.getPoolInfo(pool);
-    return poolInfo.items.map((item) => item.mint);
+    return poolInfo.items.map((item) => item.mintAccount);
   }
 }
 
-export type { PoolInfo, PoolItem };
+export type { PoolInfo, TokenInfo };

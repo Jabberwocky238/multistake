@@ -1,13 +1,21 @@
-import { BN } from "@coral-xyz/anchor";
+import { Program, BN } from "@coral-xyz/anchor";
 import { PublicKey, Keypair, SystemProgram, } from "@solana/web3.js";
 import { getAssociatedTokenAddress, } from "@solana/spl-token";
+import IDL from "./multistake.json";
 /**
  * AnySwap SDK - 单币质押系统
  */
-export class AnySwapSDK {
+export class MultiStakeSDK {
     constructor(program, provider) {
         this.program = program;
         this.provider = provider || program.provider;
+    }
+    /**
+     * 使用内置 IDL 创建 SDK 实例
+     */
+    static create(provider) {
+        const program = new Program(IDL, provider);
+        return new MultiStakeSDK(program, provider);
     }
     /**
      * 获取 Program 实例
@@ -207,21 +215,33 @@ export class AnySwapSDK {
      * 获取 Pool 信息
      */
     async getPoolInfo(pool) {
-        const poolAccount = await this.program.account.anySwapPool.fetch(pool);
-        return poolAccount;
+        const poolAccount = await this.program.account.pool.fetch(pool);
+        let poolItems = [];
+        for (let i = 0; i < poolAccount.tokenCount; i++) {
+            const token = poolAccount.tokens[i];
+            if (token.mintAccount && token.mintAccount.toString() !== PublicKey.default.toString()) {
+                poolItems.push({
+                    mintAccount: token.mintAccount,
+                    mintAmount: token.mintAmount,
+                    weight: token.weight
+                });
+            }
+        }
+        return {
+            admin: poolAccount.admin,
+            poolVault: poolAccount.poolVault,
+            poolMint: poolAccount.poolMint,
+            tokenCount: poolAccount.tokenCount,
+            feeNumerator: poolAccount.feeNumerator,
+            feeDenominator: poolAccount.feeDenominator,
+            items: poolItems,
+        };
     }
     /**
      * 获取 Pool 中所有的 LP mint
      */
     async getPoolLpMints(pool) {
-        const poolAccount = await this.program.account.anySwapPool.fetch(pool);
-        const lpMints = [];
-        for (let i = 0; i < poolAccount.tokenCount; i++) {
-            const token = poolAccount.tokens[i];
-            if (token.mintAccount && token.mintAccount.toString() !== PublicKey.default.toString()) {
-                lpMints.push(token.mintAccount);
-            }
-        }
-        return lpMints;
+        const poolInfo = await this.getPoolInfo(pool);
+        return poolInfo.items.map((item) => item.mintAccount);
     }
 }

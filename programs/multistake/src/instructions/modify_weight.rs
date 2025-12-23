@@ -1,12 +1,12 @@
 use anchor_lang::prelude::*;
-use crate::state::AnySwapPool;
+use crate::state::Pool;
 use crate::error::ErrorCode;
 
 /// 修改 token 的 weight
 #[derive(Accounts)]
 pub struct ModifyTokenWeight<'info> {
     #[account(mut)]
-    pub pool: AccountLoader<'info, AnySwapPool>,
+    pub pool: AccountLoader<'info, Pool>,
 
     /// Pool 管理员 - 必须签名所有操作
     /// CHECK: 验证是否为 pool 的管理员

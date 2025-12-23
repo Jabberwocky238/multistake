@@ -29,7 +29,7 @@ pub mod multistake {
         instructions::add_token_to_pool(ctx)
     }
 
-    /// 从 AnySwap Pool 移除 token
+    /// 从 MultiStake Pool 移除 token
     pub fn remove_token_from_pool(
         ctx: Context<RemoveTokenFromPool>,
     ) -> Result<()> {

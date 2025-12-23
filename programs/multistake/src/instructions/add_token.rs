@@ -1,6 +1,6 @@
 use anchor_lang::prelude::*;
 use anchor_spl::token::{Mint, Token};
-use crate::state::AnySwapPool;
+use crate::state::Pool;
 use crate::error::ErrorCode;
 
 /// 添加质押类型到 pool
@@ -8,7 +8,7 @@ use crate::error::ErrorCode;
 #[derive(Accounts)]
 pub struct AddTokenToPool<'info> {
     #[account(mut)]
-    pub pool: AccountLoader<'info, AnySwapPool>,
+    pub pool: AccountLoader<'info, Pool>,
 
     /// Pool authority PDA - LP mint 的 authority
     /// CHECK: PDA derived from pool key

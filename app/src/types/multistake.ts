@@ -278,7 +278,7 @@ export type Multistake = {
     {
       "name": "removeTokenFromPool",
       "docs": [
-        "从 AnySwap Pool 移除 token"
+        "从 MultiStake Pool 移除 token"
       ],
       "discriminator": [
         104,
@@ -576,16 +576,16 @@ export type Multistake = {
   ],
   "accounts": [
     {
-      "name": "anySwapPool",
+      "name": "pool",
       "discriminator": [
-        163,
-        124,
-        202,
-        65,
-        144,
-        69,
-        54,
-        192
+        241,
+        154,
+        109,
+        4,
+        17,
+        177,
+        109,
+        188
       ]
     }
   ],
@@ -658,46 +658,7 @@ export type Multistake = {
   ],
   "types": [
     {
-      "name": "anySwapItem",
-      "docs": [
-        "质押类型配置项",
-        "每个 item 记录一种质押类型的 LP mint、已发行量和权重",
-        "用于单币质押系统，不同质押类型有不同的收益权重"
-      ],
-      "serialization": "bytemuck",
-      "repr": {
-        "kind": "c"
-      },
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "mintAccount",
-            "docs": [
-              "LP 凭证 Mint account 地址 - 用户质押后获得的凭证 token (32 bytes)"
-            ],
-            "type": "pubkey"
-          },
-          {
-            "name": "mintAmount",
-            "docs": [
-              "已铸造的 LP 凭证数量 - 该质押类型的总发行量 (8 bytes)"
-            ],
-            "type": "u64"
-          },
-          {
-            "name": "weight",
-            "docs": [
-              "权重 (weight) - 动态权重，由 admin 通过 oracle 修改 (8 bytes)",
-              "影响 LP 凭证兑换主币的比率，weight 越高收益越好"
-            ],
-            "type": "u64"
-          }
-        ]
-      }
-    },
-    {
-      "name": "anySwapPool",
+      "name": "pool",
       "docs": [
         "单币质押池结构",
         "",
@@ -782,12 +743,51 @@ export type Multistake = {
               "array": [
                 {
                   "defined": {
-                    "name": "anySwapItem"
+                    "name": "poolItem"
                   }
                 },
                 512
               ]
             }
+          }
+        ]
+      }
+    },
+    {
+      "name": "poolItem",
+      "docs": [
+        "质押类型配置项",
+        "每个 item 记录一种质押类型的 LP mint、已发行量和权重",
+        "用于单币质押系统，不同质押类型有不同的收益权重"
+      ],
+      "serialization": "bytemuck",
+      "repr": {
+        "kind": "c"
+      },
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "mintAccount",
+            "docs": [
+              "LP 凭证 Mint account 地址 - 用户质押后获得的凭证 token (32 bytes)"
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "mintAmount",
+            "docs": [
+              "已铸造的 LP 凭证数量 - 该质押类型的总发行量 (8 bytes)"
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "weight",
+            "docs": [
+              "权重 (weight) - 动态权重，由 admin 通过 oracle 修改 (8 bytes)",
+              "影响 LP 凭证兑换主币的比率，weight 越高收益越好"
+            ],
+            "type": "u64"
           }
         ]
       }

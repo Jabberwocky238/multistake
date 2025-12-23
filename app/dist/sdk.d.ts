@@ -1,14 +1,18 @@
 import { Program, AnchorProvider, BN } from "@coral-xyz/anchor";
 import { PublicKey, Keypair } from "@solana/web3.js";
 import { Multistake } from "./types/multistake";
-import { PoolConfig, ModifyWeightParams } from "./types";
+import { PoolConfig, PoolInfo, TokenInfo, ModifyWeightParams } from "./types";
 /**
  * AnySwap SDK - 单币质押系统
  */
-export declare class AnySwapSDK {
+export declare class MultiStakeSDK {
     private program;
     private provider;
     constructor(program: Program<Multistake>, provider?: AnchorProvider);
+    /**
+     * 使用内置 IDL 创建 SDK 实例
+     */
+    static create(provider: AnchorProvider): MultiStakeSDK;
     /**
      * 获取 Program 实例
      */
@@ -73,9 +77,12 @@ export declare class AnySwapSDK {
     /**
      * 获取 Pool 信息
      */
-    getPoolInfo(pool: PublicKey): Promise<any>;
+    getPoolInfo(pool: PublicKey): Promise<PoolInfo & {
+        items: TokenInfo[];
+    }>;
     /**
      * 获取 Pool 中所有的 LP mint
      */
     getPoolLpMints(pool: PublicKey): Promise<PublicKey[]>;
 }
+export type { PoolInfo, TokenInfo };

@@ -8,7 +8,7 @@ use std::mem::size_of;
 #[zero_copy]
 #[repr(C)]
 #[derive(Debug)]
-pub struct AnySwapItem {
+pub struct PoolItem {
     /// LP 凭证 Mint account 地址 - 用户质押后获得的凭证 token (32 bytes)
     pub mint_account: Pubkey, // 32 bytes
     /// 已铸造的 LP 凭证数量 - 该质押类型的总发行量 (8 bytes)
@@ -19,10 +19,10 @@ pub struct AnySwapItem {
 }
 
 // 验证结构体大小和对齐（Solana 要求 8 字节对齐）
-const_assert_eq!(size_of::<AnySwapItem>(), 32 + 8 + 8); // 48 bytes
-const_assert_eq!(size_of::<AnySwapItem>() % 8, 0); // 必须是 8 的倍数
+const_assert_eq!(size_of::<PoolItem>(), 32 + 8 + 8); // 48 bytes
+const_assert_eq!(size_of::<PoolItem>() % 8, 0); // 必须是 8 的倍数
 
-impl AnySwapItem {
+impl PoolItem {
     /// 检查 item 是否为空（未使用）
     pub fn is_empty(&self) -> bool {
         self.mint_account == Pubkey::default()

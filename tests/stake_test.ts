@@ -196,9 +196,10 @@ describe("Stake and Unstake Tests", () => {
     console.log("User1 LP token after:", user1LpAfter.amount.toString());
     console.log("Pool vault after:", poolVaultAfter.amount.toString());
 
+    // With 0.3% fee: 100 tokens staked, 99.7 LP minted, 0.3 fee stays in vault
     assert.equal(user1MainAfter.amount.toString(), "900000000000"); // 1000 - 100
-    assert.equal(user1LpAfter.amount.toString(), "100000000000"); // 100 LP
-    assert.equal(poolVaultAfter.amount.toString(), "100000000000"); // 100 in vault
+    assert.equal(user1LpAfter.amount.toString(), "99700000000"); // 100 * 0.997 = 99.7 LP
+    assert.equal(poolVaultAfter.amount.toString(), "100000000000"); // 100 in vault (including 0.3 fee)
 
     console.log("✅ User1 staked 100 tokens");
   });
@@ -272,9 +273,10 @@ describe("Stake and Unstake Tests", () => {
     const user2LpAfter = await getAccount(provider.connection, user2LpTokenAccount);
     const poolVaultAfter = await getAccount(provider.connection, poolVault);
 
+    // With 0.3% fee: 200 tokens staked, 199.4 LP minted, 0.6 fee stays in vault
     assert.equal(user2MainAfter.amount.toString(), "800000000000"); // 1000 - 200
-    assert.equal(user2LpAfter.amount.toString(), "200000000000"); // 200 LP
-    assert.equal(poolVaultAfter.amount.toString(), "300000000000"); // 100 + 200
+    assert.equal(user2LpAfter.amount.toString(), "199400000000"); // 200 * 0.997 = 199.4 LP
+    assert.equal(poolVaultAfter.amount.toString(), "300000000000"); // 100 + 200 (including fees)
 
     console.log("✅ User2 staked 200 tokens");
   });
@@ -307,9 +309,9 @@ describe("Stake and Unstake Tests", () => {
     console.log("Pool vault before unstake:", poolVaultBefore.amount.toString());
     console.log("User2 LP before:", user2LpBefore.amount.toString());
 
-    // Unstake all LP tokens
+    // Unstake all LP tokens (199.4 tokens, not 200)
     await program.methods
-      .unstake(1, new anchor.BN(200_000_000_000))
+      .unstake(1, new anchor.BN(199_400_000_000))
       .accounts({
         pool: pool.publicKey,
         poolAuthority: poolAuthority,
@@ -343,9 +345,9 @@ describe("Stake and Unstake Tests", () => {
     console.log("Pool vault before unstake:", poolVaultBefore.amount.toString());
     console.log("User1 LP before:", user1LpBefore.amount.toString());
 
-    // Unstake all LP tokens
+    // Unstake all LP tokens (99.7 tokens, not 100)
     await program.methods
-      .unstake(0, new anchor.BN(100_000_000_000))
+      .unstake(0, new anchor.BN(99_700_000_000))
       .accounts({
         pool: pool.publicKey,
         poolAuthority: poolAuthority,

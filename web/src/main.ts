@@ -1,13 +1,13 @@
 import { Connection, PublicKey } from "@solana/web3.js";
 import { AnchorProvider, Program, Wallet } from "@coral-xyz/anchor";
 import { PhantomWalletAdapter } from "@solana/wallet-adapter-phantom";
-import { AnySwapSDK } from "../../app/src/sdk";
+import { MultiStakeSDK } from "@KM-studio/multistake-sdk";
 
 // Program ID
 const PROGRAM_ID = new PublicKey("2mgSDKAjDo8fQN6oms6YzczHhyeYEJunTzxjQgegYADf");
 const RPC_URL = "http://127.0.0.1:8899";
 
-let sdk: AnySwapSDK | null = null;
+let sdk: MultiStakeSDK | null = null;
 let phantomWallet: PhantomWalletAdapter | null = null;
 
 // 日志函数
@@ -50,7 +50,7 @@ async function connectWallet() {
     }
 
     const program = new Program(idl, PROGRAM_ID, provider);
-    sdk = new AnySwapSDK(program);
+    sdk = new MultiStakeSDK(program);
 
     log("✅ SDK initialized");
 

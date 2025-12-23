@@ -150,7 +150,7 @@ describe("Pool Operations Tests", () => {
     console.log("Create pool transaction:", tx);
 
     // Verify pool was created
-    const poolAccount = await program.account.anySwapPool.fetch(pool.publicKey);
+    const poolAccount = await program.account.pool.fetch(pool.publicKey);
     assert.equal(poolAccount.tokenCount, 0);
     assert.equal(poolAccount.incrementCount, 0);
     assert.equal(poolAccount.admin.toBase58(), admin.publicKey.toBase58());
@@ -184,7 +184,7 @@ describe("Pool Operations Tests", () => {
     console.log("Add token transaction:", tx);
 
     // Verify token was added
-    const poolAccount = await program.account.anySwapPool.fetch(pool.publicKey);
+    const poolAccount = await program.account.pool.fetch(pool.publicKey);
     assert.equal(poolAccount.tokenCount, 1);
     assert.equal(poolAccount.incrementCount, 1);
 
@@ -211,7 +211,7 @@ describe("Pool Operations Tests", () => {
 
     console.log("Add second token transaction:", tx);
 
-    const poolAccount = await program.account.anySwapPool.fetch(pool.publicKey);
+    const poolAccount = await program.account.pool.fetch(pool.publicKey);
     assert.equal(poolAccount.tokenCount, 2);
     assert.equal(poolAccount.incrementCount, 2);
 
@@ -233,7 +233,7 @@ describe("Pool Operations Tests", () => {
 
     console.log("Remove token transaction:", tx);
 
-    const poolAccount = await program.account.anySwapPool.fetch(pool.publicKey);
+    const poolAccount = await program.account.pool.fetch(pool.publicKey);
     assert.equal(poolAccount.tokenCount, 1);
     assert.equal(poolAccount.incrementCount, 2); // Should NOT change
 
@@ -260,7 +260,7 @@ describe("Pool Operations Tests", () => {
 
     console.log("Add third token transaction:", tx);
 
-    const poolAccount = await program.account.anySwapPool.fetch(pool.publicKey);
+    const poolAccount = await program.account.pool.fetch(pool.publicKey);
     assert.equal(poolAccount.tokenCount, 2);
     assert.equal(poolAccount.incrementCount, 3);
 

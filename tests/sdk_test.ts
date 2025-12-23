@@ -7,11 +7,11 @@ import {
   getAccount,
 } from "@solana/spl-token";
 import { assert } from "chai";
-import { AnySwapSDK } from "../app/src/sdk";
+import { MultiStakeSDK } from "../app/src/sdk";
 
 describe("SDK Tests", () => {
   // SDK instance
-  let sdk: AnySwapSDK;
+  let sdk: MultiStakeSDK;
   const programId = new PublicKey("2mgSDKAjDo8fQN6oms6YzczHhyeYEJunTzxjQgegYADf");
 
   // Test accounts
@@ -45,7 +45,7 @@ describe("SDK Tests", () => {
 
     // Initialize SDK with program from workspace
     const program = anchor.workspace.Multistake as anchor.Program<any>;
-    sdk = new AnySwapSDK(program, provider);
+    sdk = new MultiStakeSDK(program, provider);
 
     console.log("✅ SDK initialized");
   });
