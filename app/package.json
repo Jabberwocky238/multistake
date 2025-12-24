@@ -1,6 +1,6 @@
 {
   "name": "@KM-studio/multistake-sdk",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "TypeScript SDK for MultiStake - Single Token Staking System",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -29,5 +29,11 @@
     "@coral-xyz/anchor": "^0.32.0",
     "@solana/web3.js": "^1.95.0",
     "@solana/spl-token": "^0.4.0"
+  },
+  "devDependencies": {
+    "@coral-xyz/anchor": "^0.32.0",
+    "@solana/web3.js": "^1.95.0",
+    "@solana/spl-token": "^0.4.0",
+    "typescript": "^5.0.0"
   }
 }
