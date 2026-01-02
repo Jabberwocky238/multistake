@@ -1,7 +1,4 @@
-# Source files
-src/
-*.ts
-!*.d.ts
+
 
 # Development files
 tsconfig.json

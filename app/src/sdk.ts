@@ -20,11 +20,8 @@ import {
   PoolConfig,
   PoolInfo,
   TokenInfo,
-  StakeParams,
-  UnstakeParams,
-  ModifyWeightParams,
 } from "./types";
-
+import { createAssociatedTokenAccountInstruction } from "@solana/spl-token";
 
 /**
  * AnySwap SDK - 单币质押系统
@@ -182,22 +179,12 @@ export class MultiStakeSDK {
     return signature;
   }
 
-  /**
-   * 修改 Token 权重
-   * @param pool Pool 公钥
-   * @param params 权重参数
-   * @param admin 管理员
-   * @returns 交易签名
-   */
   async modifyTokenWeight(
     pool: PublicKey,
-    params: ModifyWeightParams,
+    weights: BN[],
+    tokenMints: PublicKey[],
     admin: Keypair
   ): Promise<string> {
-    const weights = params.weights.map((w) =>
-      typeof w === "number" ? new BN(w) : w
-    );
-
     const signature = await this.program.methods
       .modifyTokenWeight(weights)
       .accounts({
@@ -205,7 +192,7 @@ export class MultiStakeSDK {
         admin: admin.publicKey,
       })
       .remainingAccounts(
-        params.tokenMints.map((mint) => ({
+        tokenMints.map((mint) => ({
           pubkey: mint,
           isSigner: false,
           isWritable: false,
@@ -224,28 +211,22 @@ export class MultiStakeSDK {
     pool: PublicKey,
     itemIndex: number,
     lpMint: PublicKey,
-    amount: number | BN
+    amount: BN
   ): Promise<string> {
     const wallet = this.provider.publicKey;
     const [poolVault] = this.derivePoolVault(pool);
 
     // Convert amount to BN with proper decimals (9 decimals for SOL/WSOL)
-    const amountBN = typeof amount === "number" ? new BN(amount * 1e9) : amount;
+    const amountBN = new BN(amount)
 
     // Get pool info to get main token mint
     const poolInfo = await this.getPoolInfo(pool);
     const mainTokenMint = poolInfo.poolMint;
 
-    const userMainToken = await getAssociatedTokenAddress(
-      mainTokenMint,
-      wallet
-    );
+    const userMainToken = await getAssociatedTokenAddress(mainTokenMint, wallet);
 
     // Get or create user's LP token account
-    const userLpToken = await getAssociatedTokenAddress(
-      lpMint,
-      wallet
-    );
+    const userLpToken = await getAssociatedTokenAddress(lpMint, wallet);
 
     // Check if accounts exist, if not, create them
     const preInstructions = [];
@@ -253,7 +234,6 @@ export class MultiStakeSDK {
     // Check user main token account
     const mainTokenAccountInfo = await this.provider.connection.getAccountInfo(userMainToken);
     if (!mainTokenAccountInfo) {
-      const { createAssociatedTokenAccountInstruction } = await import("@solana/spl-token");
       preInstructions.push(
         createAssociatedTokenAccountInstruction(
           wallet,
@@ -267,7 +247,6 @@ export class MultiStakeSDK {
     // Check user LP token account
     const lpTokenAccountInfo = await this.provider.connection.getAccountInfo(userLpToken);
     if (!lpTokenAccountInfo) {
-      const { createAssociatedTokenAccountInstruction } = await import("@solana/spl-token");
       preInstructions.push(
         createAssociatedTokenAccountInstruction(
           wallet,
@@ -301,13 +280,10 @@ export class MultiStakeSDK {
     pool: PublicKey,
     itemIndex: number,
     lpMint: PublicKey,
-    lpAmount: number | BN
+    lpAmount: BN
   ): Promise<string> {
     const wallet = this.provider.publicKey;
     const [poolVault] = this.derivePoolVault(pool);
-
-    // Convert LP amount to BN with proper decimals (9 decimals for LP tokens)
-    const lpAmountBN = typeof lpAmount === "number" ? new BN(lpAmount * 1e9) : lpAmount;
 
     // Get pool info to get main token mint
     const poolInfo = await this.getPoolInfo(pool);
@@ -324,7 +300,7 @@ export class MultiStakeSDK {
     );
 
     const signature = await this.program.methods
-      .unstake(itemIndex, lpAmountBN)
+      .unstake(itemIndex, lpAmount)
       .accountsPartial({
         pool,
         poolVault,

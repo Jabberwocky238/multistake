@@ -30,26 +30,6 @@ export interface TokenInfo {
   weight: BN;
 }
 
-/**
- * 质押参数
- */
-export interface StakeParams {
-  itemIndex: number;
-  amount: number | BN;
-}
 
-/**
- * 取消质押参数
- */
-export interface UnstakeParams {
-  itemIndex: number;
-  lpAmount: number | BN;
-}
 
-/**
- * 修改权重参数
- */
-export interface ModifyWeightParams {
-  weights: (number | BN)[];
-  tokenMints: PublicKey[];
-}
+

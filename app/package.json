@@ -1,13 +1,8 @@
 {
-  "name": "@KM-studio/multistake-sdk",
-  "version": "0.1.1",
+  "name": "multistake",
+  "version": "0.1.2",
   "description": "TypeScript SDK for MultiStake - Single Token Staking System",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
-  "scripts": {
-    "build": "tsc && cp src/multistake.json dist/multistake.json",
-    "prepublish": "npm run build"
-  },
+  "main": "src/index.ts",
   "keywords": [
     "solana",
     "anchor",
